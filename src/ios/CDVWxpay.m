@@ -16,7 +16,8 @@
 {
     [self.commandDelegate runInBackground:^{
         // check arguments
-        NSDictionary *params = [command.arguments objectAtIndex:0];
+        NSString* strJson = [command.arguments objectAtIndex:0];
+        NSDictionary *params = [self getObjectFromJSON:strJson];
         if (!params)
         {
             [self failWithCallbackID:command.callbackId withMessage:@"参数格式错误"];
@@ -209,6 +210,18 @@
 }
 
 #pragma mark "Private methods"
+
+- (NSDictionary*) getObjectFromJSON:(NSString *)json
+{
+    NSError* error;
+    NSDictionary* dict = [NSJSONSerialization JSONObjectWithData: [json dataUsingEncoding:NSUnicodeStringEncoding] options:NSJSONReadingMutableContainers error:&error];
+    if (error)
+    {
+        NSLog(@"Got an error: %@", error);
+        dict = nil;
+    }
+    return dict;
+}
 
 - (NSData *)getNSDataFromURL:(NSString *)url
 {
